@@ -1,4 +1,5 @@
 import gym
+# 山登りsample
 env = gym.make('MountainCar-v0')
 total = 0
 N = 100
