@@ -43,20 +43,20 @@ def max_Q(s, theta):
     return random.choice(indexes)
 
 def learn_MC(L=100, M=10, T=200, EPSIL=0.1,GAMMA=0.1, options=2):
-    B = 36
+    B = 12
     # パラメータ
-    theta = np.random.rand(B)
+    theta = np.random.rand(B*3)
 
     # 政策反復
     for l in range(L):
         # 標本抽出
-        x = [] # M*T*B
-        r = [] # M*T
-        print("policy")
+        x = np.zeros((M*T, B*3)) # (M*T)*B
+        r = np.zeros((M*T, 1)) # (M*T)
+        print("policy"+str(l))
         for m in range(M): # エピソード
             observation = env.reset()
             for t in range(T): # ステップ
-                # env.render()
+                env.render()
 
                 # 政策改善方法
                 action_p = [0,0,0]
@@ -71,8 +71,8 @@ def learn_MC(L=100, M=10, T=200, EPSIL=0.1,GAMMA=0.1, options=2):
                 action = choose(action_p)
 
                 if t >= 1:
-                    x.append(basis_func(pre_observation, pre_action)- (GAMMA*basis_func(observation, action)))
-                    r.append(pre_reward)
+                    x[(m*T)+t-1] = basis_func(pre_observation, pre_action)- (GAMMA*basis_func(observation, action))
+                    r[(m*T)+t-1] = pre_reward
 
                 pre_observation = observation
                 pre_action = action
@@ -82,13 +82,14 @@ def learn_MC(L=100, M=10, T=200, EPSIL=0.1,GAMMA=0.1, options=2):
 
                 pre_reward = reward
                 if done:  # goal
-                    print("Episode %d finished after {} timesteps".format(m) % t)
+                    if t < T-1:
+                        print("Episode %d finished after {} timesteps".format(t) % m)
                     break
 
-        X = np.array(x).reshape((M,-1))
-        R = np.array(r).reshape((M,-1))
+        X = np.array(x).reshape((M*T,-1))
+        R = np.array(r).reshape((M*T,-1))
 
         theta = np.dot(np.dot(np.linalg.pinv((np.dot(X.T,X))),X.T), R)
 
 if __name__ == '__main__':
-    learn_MC(M=10)
+    learn_MC(M=100)
