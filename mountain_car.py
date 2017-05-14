@@ -42,10 +42,10 @@ def max_Q(s, theta):
     indexes = [i for i, x in enumerate(Q) if x == max(Q)]
     return random.choice(indexes)
 
-def learn_MC(L=100, M=10, T=200, EPSIL=0.1,GAMMA=0.1, options=2):
+def learn_MC(L=100, M=100, T=200, EPSIL=0.1,GAMMA=0.95, options=2):
     B = 12
     # パラメータ
-    theta = np.random.rand(B*3)
+    theta = np.zeros(B*3)
 
     # 政策反復
     for l in range(L):
@@ -71,7 +71,10 @@ def learn_MC(L=100, M=10, T=200, EPSIL=0.1,GAMMA=0.1, options=2):
                 action = choose(action_p)
 
                 if t >= 1:
-                    x[(m*T)+t-1] = basis_func(pre_observation, pre_action)- (GAMMA*basis_func(observation, action))
+                    aphi = np.zeros(B*3)
+                    for a in range(3):
+                        aphi += basis_func(observation, a) * action_p[a]
+                    x[(m*T)+t-1] = basis_func(pre_observation, pre_action) - (GAMMA*aphi)
                     r[(m*T)+t-1] = pre_reward
 
                 pre_observation = observation
@@ -81,8 +84,8 @@ def learn_MC(L=100, M=10, T=200, EPSIL=0.1,GAMMA=0.1, options=2):
                 observation, reward, done, info = env.step(action)
 
                 pre_reward = reward
-                if done:  # goal
-                    if t < T-1:
+                if done:
+                    if t < T-1: # goal
                         print("Episode %d finished after {} timesteps".format(t) % m)
                     break
 
@@ -92,4 +95,4 @@ def learn_MC(L=100, M=10, T=200, EPSIL=0.1,GAMMA=0.1, options=2):
         theta = np.dot(np.dot(np.linalg.pinv((np.dot(X.T,X))),X.T), R)
 
 if __name__ == '__main__':
-    learn_MC(M=100)
+    learn_MC()

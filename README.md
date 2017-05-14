@@ -3,4 +3,5 @@
 
 [link](https://github.com/shunyooo/openaigym)
 
-未完成
+解くことはできる
+リファクタリングは時間がある時
