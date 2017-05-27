@@ -3,5 +3,6 @@
 
 [link](https://github.com/shunyooo/openaigym)
 
-解くことはできる
-リファクタリングは時間がある時
+mountain_car.py:状態連続　行動離散
+mountain_car2.py:状態、行動連続（政策勾配）
+penduram.py:ペンデュラム
