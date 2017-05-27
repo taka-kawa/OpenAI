@@ -1,5 +1,9 @@
 # OpenAI
-[Mountain Car 仕様](https://github.com/openai/gym/wiki/MountainCar-v0)
+[Mountain Car 仕様](https://github.com/openai/gym/wiki/MountainCar-v0)  
+
+[Mountain Car Continuous　仕様](https://github.com/openai/gym/wiki/MountainCarContinuous-v0)  
+
+[Pendulum　仕様](https://github.com/openai/gym/wiki/Pendulum-v0)  
 
 [link](https://github.com/shunyooo/openaigym)
 
