@@ -10,13 +10,14 @@ class MountainCar2():
         self.__N = 3 #モデルパラメータ数(mu:2,sigma:1)
         self.__mu = np.random.random((self.__N-1))-0
         self.__sigma = np.random.random((1))*10
-        self.__min = -1
-        self.__max = 1
 
     def __get_action(self, observation):
-        a = np.random.normal(np.dot(self.__mu.T, observation), self.__sigma ** 2, 1)
-        a = min(a, self.__max)
-        a = max(a, self.__min)
+        max_a = env.action_space.high
+        min_a = env.action_space.low
+        # a = np.random.normal(np.dot(self.__mu.T, observation), self.__sigma ** 2, 1)
+        a = np.random.randn() * self.__sigma + np.dot(self.__mu.T, observation)
+        a = min(a, max_a)
+        a = max(a, min_a)
 
         return a
 
@@ -28,10 +29,12 @@ class MountainCar2():
             print(self.__mu, self.__sigma)
             drs = np.zeros(M)
             der = np.zeros([M,self.__N]) #パラメータ
+            goal_count = 0
             for m in range(M):
                 observation = env.reset()
                 for t in range(T):
-                    env.render()
+                    if m == M - 1 and l % 10 == 0:
+                        env.render()
 
                     action = [0]
                     # 行動決定
@@ -48,12 +51,14 @@ class MountainCar2():
                     drs[m] += GAMMA**(t) * reward
 
                     if done:
-                        if t < T-1: # goal
+                        if t < T-2: # goal
                             print("Episode %d finished after {} timesteps".format(t) % m)
+                            goal_count += 1
                         break
+            print(str(goal_count) + "/" + str(M))
 
             # baseline
-            baseLine = drs * np.diag(np.dot(der, der.T)) / np.trace(np.dot(der, der.T))
+            baseLine = np.dot(drs,np.diag(np.dot(der,der.T)))/np.trace(np.dot(der,der.T))
 
             # 勾配推定
             der_J = (np.dot((drs - baseLine),der)) / M
@@ -65,4 +70,4 @@ class MountainCar2():
 
 if __name__ == '__main__':
     mc = MountainCar2()
-    mc.learnMC(M=100)
+    mc.learnMC(M=100, T=1000, ALPHA=0.1, GAMMA=1)

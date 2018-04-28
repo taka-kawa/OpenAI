@@ -14,7 +14,8 @@ class Pendulum():
         self.__max = 2
 
     def __get_action(self, observation):
-        a = np.random.normal(np.dot(self.__mu.T, observation), self.__sigma ** 2, 1)
+        # a = np.random.normal(np.dot(self.__mu.T, observation), self.__sigma, 1)
+        a = np.random.randn() * self.__sigma + np.dot(self.__mu.T, observation)
         a = min(a, self.__max)
         a = max(a, self.__min)
 
@@ -62,7 +63,7 @@ class Pendulum():
                         break
 
             # baseline
-            baseLine = drs * np.diag(np.dot(der, der.T)) / np.trace(np.dot(der, der.T))
+            baseLine = np.dot(drs,np.diag(np.dot(der,der.T)))/np.trace(np.dot(der,der.T))
 
             # 勾配推定
             der_J = (np.dot((drs - baseLine), der)) / M
